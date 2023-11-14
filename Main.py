@@ -42,10 +42,12 @@ def signup():
         try:
             db.session.add(new_user)
             db.session.commit()
+            return redirect(url_for('login'))
         except Exception as e:
             db.session.rollback()
-            logging.error(f"An error occurred: {str(e)}")
-        return redirect(url_for('login'))
+            logging.error("An error occurred during user registration.")
+            logging.exception(e)
+            return "An error occurred during user registration. Please try again."
     return render_template('signup.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -69,5 +71,6 @@ def dashboard():
     return "You are not logged in."
 
 if __name__ == '__main__':
-    db.create_all()
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
